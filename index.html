@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector de Texto con Scroll Automático</title>
+    <script src="pdf.js"></script> <!-- Biblioteca PDF.js -->
+    <script src="script.js" defer></script> <!-- Tu código JS --> 
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #textContainer { 
+            width: 80%; height: 300px; overflow-y: scroll; 
+            margin: 20px auto; border: 1px solid #ccc; padding: 10px; 
+        }
+        button, input { margin: 5px; padding: 10px; }
+    </style>
+	
+	<!-- Manifest para la PWA -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Configuración para iPhone -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Lector de Texto">
+
+<!-- Ícono para iPhone -->
+<link rel="apple-touch-icon" href="icon.png">
+
+</head>
+<body>
+    <h2>Lector de Texto con Scroll Automático</h2>
+    <input type="file" id="fileInput" accept=".txt, .pdf">
+    <input type="number" id="speedInput" placeholder="Palabras por minuto" value="200">
+	<p>Velocidad actual: <span id="speedDisplay">200</span> PPM</p>
+    <button id="startButton">Iniciar</button>
+    <button id="pauseButton">Pausar</button>
+    <button id="stopButton">Detener</button>
+    
+    <div id="textContainer"></div>
+</body>
+</html>
