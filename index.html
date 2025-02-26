@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lector de Texto con Scroll Automático</title>
     <script src="pdf.js"></script> <!-- Biblioteca PDF.js -->
-    <script src="script.js" defer></script> <!-- Tu código JS --> 
+    <!--<script src="script.js" defer></script>  Tu código JS --> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         #textContainer { 
@@ -28,15 +30,45 @@
 }
 
 .dark-mode #texto-container {
-    background-color: #1e1e1e;
-    color: #e0e0e0;
+    background-color: #1e1e1e;  /* Fondo oscuro */
+    color: #e0e0e0;  /* Texto claro */
+    border: 1px solid #444;  /* Borde sutil */
 }
 
-.dark-mode button {
+
+.dark-mode button, 
+.dark-mode input[type="number"], 
+.dark-mode input[type="range"] {
     background-color: #333;
     color: #fff;
     border: 1px solid #fff;
 }
+
+.dark-mode input[type="range"] {
+    filter: brightness(1.2);
+}
+
+.dark-mode button:hover {
+    background-color: #555;
+}
+
+/* Modo claro (normal) */
+#texto-container {
+    background-color: #ffffff; /* Fondo blanco */
+    color: #000000; /* Texto negro */
+    border: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+/* Modo oscuro */
+.dark-mode #texto-container {
+    background-color: #1e1e1e !important; /* Fondo oscuro */
+    color: #f0f0f0 !important; /* Texto claro */
+    border: 1px solid #444;
+}
+
+
 
 
     </style>
@@ -61,7 +93,7 @@
     <button id="startButton">Iniciar</button>
     <button id="pauseButton">Pausar</button>
     <button id="stopButton">Detener</button>
-	<button id="modo-oscuro-btn">🌙 Modo Oscuro</button>
+	<button id="dark-mode">🌙 Modo Oscuro</button>
     
     <div id="textContainer"></div>
 </body>
