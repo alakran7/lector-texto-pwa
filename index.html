@@ -24,49 +24,7 @@
 			box-sizing: border-box;
 			background: #f9f9f9; /* Color de fondo suave */
 		}
-		body.dark-mode {
-    background-color: #121212;
-    color: #ffffff;
-}
 
-.dark-mode #texto-container {
-    background-color: #1e1e1e;  /* Fondo oscuro */
-    color: #e0e0e0;  /* Texto claro */
-    border: 1px solid #444;  /* Borde sutil */
-}
-
-
-.dark-mode button, 
-.dark-mode input[type="number"], 
-.dark-mode input[type="range"] {
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #fff;
-}
-
-.dark-mode input[type="range"] {
-    filter: brightness(1.2);
-}
-
-.dark-mode button:hover {
-    background-color: #555;
-}
-
-/* Modo claro (normal) */
-#texto-container {
-    background-color: #ffffff; /* Fondo blanco */
-    color: #000000; /* Texto negro */
-    border: 1px solid #ccc;
-    padding: 10px;
-    overflow-y: auto;
-}
-
-/* Modo oscuro */
-.dark-mode #texto-container {
-    background-color: #1e1e1e !important; /* Fondo oscuro */
-    color: #f0f0f0 !important; /* Texto claro */
-    border: 1px solid #444;
-}
 
 
 
@@ -93,7 +51,6 @@
     <button id="startButton">Iniciar</button>
     <button id="pauseButton">Pausar</button>
     <button id="stopButton">Detener</button>
-	<button id="dark-mode">🌙 Modo Oscuro</button>
     
     <div id="textContainer"></div>
 </body>
