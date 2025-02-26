@@ -88,3 +88,24 @@ if ("serviceWorker" in navigator) {
         .then(() => console.log("Service Worker registrado"))
         .catch((error) => console.log("Error al registrar el Service Worker:", error));
 }
+
+const modoOscuroBtn = document.getElementById("modo-oscuro-btn");
+
+// Verificar si el usuario ya activó el modo oscuro antes
+if (localStorage.getItem("modoOscuro") === "activado") {
+    document.body.classList.add("dark-mode");
+    modoOscuroBtn.textContent = "☀️ Modo Claro";
+}
+
+modoOscuroBtn.addEventListener("click", function() {
+    document.body.classList.toggle("dark-mode");
+
+    // Guardar la preferencia en localStorage
+    if (document.body.classList.contains("dark-mode")) {
+        localStorage.setItem("modoOscuro", "activado");
+        modoOscuroBtn.textContent = "☀️ Modo Claro";
+    } else {
+        localStorage.setItem("modoOscuro", "desactivado");
+        modoOscuroBtn.textContent = "🌙 Modo Oscuro";
+    }
+});
