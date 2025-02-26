@@ -13,6 +13,16 @@
             margin: 20px auto; border: 1px solid #ccc; padding: 10px; 
         }
         button, input { margin: 5px; padding: 10px; }
+		
+		#texto-container {
+			width: 100%;
+			height: 100vh; /* Ocupa toda la altura de la pantalla */
+			overflow-y: auto; /* Permite el scroll */
+			padding: 20px;
+			box-sizing: border-box;
+			background: #f9f9f9; /* Color de fondo suave */
+		}
+
     </style>
 	
 	<!-- Manifest para la PWA -->
@@ -36,6 +46,6 @@
     <button id="pauseButton">Pausar</button>
     <button id="stopButton">Detener</button>
     
-    <div id="textContainer"></div>
+    <div id="texto-Container"></div>
 </body>
 </html>
