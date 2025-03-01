@@ -10,24 +10,6 @@ let isPaused = false;
 
 
 
-startButton.addEventListener("click", () => {
-    if (!scrollInterval) {
-        startScrolling();
-    } else if (isPaused) {
-        isPaused = false;
-    }
-});
-
-pauseButton.addEventListener("click", () => {
-    isPaused = true;
-});
-
-stopButton.addEventListener("click", () => {
-    clearInterval(scrollInterval);
-    scrollInterval = null;
-    textContainer.scrollTop = 0;
-});
-
 function startScrolling() {
     const ppm = parseInt(speedInput.value) || 200;
     const velocidadScroll = (textContainer.scrollHeight / ppm) * 10; // Ajuste más dinámico
@@ -116,6 +98,26 @@ document.addEventListener("DOMContentLoaded", () => {
         textContainer.innerText = text;
     }
 });
+
+
+startButton.addEventListener("click", () => {
+    if (!scrollInterval) {
+        startScrolling();
+    } else if (isPaused) {
+        isPaused = false;
+    }
+});
+
+pauseButton.addEventListener("click", () => {
+    isPaused = true;
+});
+
+stopButton.addEventListener("click", () => {
+    clearInterval(scrollInterval);
+    scrollInterval = null;
+    textContainer.scrollTop = 0;
+});
+
 	
 });
 
