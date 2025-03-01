@@ -127,7 +127,7 @@ function cargarArchivoPorDefecto() {
         return;
     }
 
-    const defaultFile = "default.epub"; // Cambia a "default.txt" o "default.pdf" si prefieres otro
+    const defaultFile = "La_luz_entre_nosotros_Laura_Lynne_Jackson.epub"; // Cambia a "default.txt" o "default.pdf" si prefieres otro
     const fileUrl = window.location.origin + "/lector-texto-pwa/" + defaultFile;
 
     fetch(fileUrl)
