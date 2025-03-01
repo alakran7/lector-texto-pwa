@@ -121,15 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function cargarArchivoPorDefecto() {
-    const textoContainer = document.getElementById("textContainer");
-    if (!textoContainer) {
-        console.error("❌ Error: No se encontró el elemento #texto-container");
-        return;
-    }
-
-    const defaultFile = "La_luz_entre_nosotros_Laura_Lynne_Jackson.epub"; // Cambia a "default.txt" o "default.pdf" si prefieres otro
-    const fileUrl = window.location.origin + "/lector-texto-pwa/" + defaultFile;
-
+    const defaultFile = "textoWarmup.txt"; // Cambia a "default.pdf" si prefieres un PDF
+    const fileUrl = window.location.origin + "/lector-texto-pwa/" +defaultFile;
+    console.log(fileUrl);
     fetch(fileUrl)
         .then(response => {
             if (!response.ok) {
@@ -140,17 +134,14 @@ function cargarArchivoPorDefecto() {
         .then(blob => {
             if (defaultFile.endsWith(".txt")) {
                 blob.text().then(text => {
-                    textoContainer.textContent = text;
+                    document.getElementById("textContainer").textContent = text;
                 });
             } else if (defaultFile.endsWith(".pdf")) {
-                leerPDF(blob, textoContainer);
-            } else if (defaultFile.endsWith(".epub")) {
-                leerEPUB(blob, textoContainer);
+                leerPDF(blob);
             }
         })
-        .catch(error => console.error("❌ Error al cargar el archivo por defecto:", error));
+        .catch(error => console.error("Error al cargar el archivo por defecto:", error));
 }
-
 
 function leerPDF(blob) {
     const reader = new FileReader();
@@ -176,23 +167,3 @@ function leerPDF(blob) {
         });
     };
 }
-
-function leerEPUB(blob, textoContainer) {
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(blob);
-
-    reader.onload = function (event) {
-        const book = ePub(event.target.result); // Cargar EPUB en EPUB.js
-        const rendition = book.renderTo(textoContainer, {
-            width: "100%",
-            height: "100%",
-        });
-
-        book.ready.then(() => {
-            book.locations.generate().then(() => {
-                rendition.display(); // Mostrar el contenido del EPUB
-            });
-        });
-    };
-}
-
