@@ -2,7 +2,7 @@ let scrollInterval;
 let isPaused = false;
 document.addEventListener("DOMContentLoaded", () => {
     if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/sw.js")
+        navigator.serviceWorker.register("/lector-texto-pwa/sw.js")
             .then(() => console.log("Service Worker registrado"))
             .catch((error) => console.log("Error al registrar el Service Worker:", error));
     }
