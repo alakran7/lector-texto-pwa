@@ -134,7 +134,7 @@ function cargarArchivoPorDefecto() {
         .then(blob => {
             if (defaultFile.endsWith(".txt")) {
                 blob.text().then(text => {
-                    document.getElementById("texto-container").textContent = text;
+                    document.getElementById("textContainer").textContent = text;
                 });
             } else if (defaultFile.endsWith(".pdf")) {
                 leerPDF(blob);
@@ -162,7 +162,7 @@ function leerPDF(blob) {
 
             Promise.all(pages).then(textArray => {
                 textContent = textArray.join("\n\n");
-                document.getElementById("texto-container").textContent = textContent;
+                document.getElementById("textContainer").textContent = textContent;
             });
         });
     };
