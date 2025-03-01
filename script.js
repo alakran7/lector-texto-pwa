@@ -1,3 +1,6 @@
+let scrollInterval;
+let isPaused = false;
+
 document.addEventListener("DOMContentLoaded", () => {
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js")
@@ -8,28 +11,28 @@ document.addEventListener("DOMContentLoaded", () => {
     fileInput.addEventListener("change", async (event) => {
         const file = event.target.files[0];
         if (file) {
-            const text = await readFile(file);  // Asegúrate de que readFile esté definida antes de esta línea
+            const text = await readFile(file);
             textContainer.innerText = text;
         }
     });
 
     startButton.addEventListener("click", () => {
         if (!scrollInterval) {
-            startScrolling();
+            startScrolling();  // Inicia el scroll si no ha sido iniciado aún
         } else if (isPaused) {
-            isPaused = false;
+            isPaused = false;  // Reanuda si estaba pausado
         }
     });
 
     pauseButton.addEventListener("click", () => {
-        isPaused = true;
+        isPaused = true;  // Pausa el scroll
     });
 
     stopButton.addEventListener("click", () => {
         clearInterval(scrollInterval);
-        scrollInterval = null;
-        textContainer.scrollTop = 0;
-        localStorage.removeItem("posicionScroll");
+        scrollInterval = null;  // Restablece el intervalo al detener el scroll
+        textContainer.scrollTop = 0;  // Vuelve al inicio
+        localStorage.removeItem("posicionScroll");  // Limpia la posición del scroll en localStorage
     });
 
     speedInput.addEventListener("input", () => {
@@ -38,6 +41,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     cargarArchivoPorDefecto();
 });
+
+function startScrolling() {
+    const ppm = parseInt(speedInput.value) || 200;
+    const velocidadScroll = (textContainer.scrollHeight / ppm) * 10; // Ajuste dinámico
+
+    clearInterval(scrollInterval);  // Limpia cualquier intervalo anterior
+    scrollInterval = setInterval(() => {
+        if (!isPaused) {
+            textContainer.scrollTop += 2; // Incremento más visible
+        }
+    }, velocidadScroll);
+}
 
 async function readFile(file) {
     return new Promise((resolve, reject) => {
