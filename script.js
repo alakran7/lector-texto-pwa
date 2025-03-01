@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const file = event.target.files[0];
         if (file) {
             const text = await readFile(file);
-            //textContainer.innerText = text;
             textContainer.innerHTML = formatTextToThreeWordsPerLine(text);
         }
     });
@@ -37,16 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     speedInput.addEventListener("input", () => {
         document.getElementById("speedDisplay").innerText = speedInput.value;
-    });
-
-    document.getElementById("tab1").addEventListener("click", () => {
-        document.getElementById("textContainer").style.display = "block";
-        document.getElementById("formattedTextContainer").style.display = "none";
-    });
-
-    document.getElementById("tab2").addEventListener("click", () => {
-        document.getElementById("textContainer").style.display = "none";
-        document.getElementById("formattedTextContainer").style.display = "block";
     });
 
     cargarArchivoPorDefecto();
@@ -102,7 +91,7 @@ function cargarArchivoPorDefecto() {
         .then(blob => {
             if (defaultFile.endsWith(".txt")) {
                 blob.text().then(text => {
-                    document.getElementById("textContainer").textContent = text;
+                    document.getElementById("textContainer").textContent = formatTextToThreeWordsPerLine(text);
                 });
             } else if (defaultFile.endsWith(".pdf")) {
                 leerPDF(blob);
