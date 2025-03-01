@@ -8,32 +8,6 @@ const textContainer = document.getElementById("textContainer");
 let scrollInterval;
 let isPaused = false;
 
-fileInput.addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        const text = await readFile(file);
-        textContainer.innerText = text;
-    }
-});
-
-startButton.addEventListener("click", () => {
-    if (!scrollInterval) {
-        startScrolling();
-    } else if (isPaused) {
-        isPaused = false;
-    }
-});
-
-pauseButton.addEventListener("click", () => {
-    isPaused = true;
-});
-
-stopButton.addEventListener("click", () => {
-    clearInterval(scrollInterval);
-    scrollInterval = null;
-    textContainer.scrollTop = 0;
-});
-
 function startScrolling() {
     const ppm = parseInt(speedInput.value) || 200;
     const velocidadScroll = (textContainer.scrollHeight / ppm) * 10; // Ajuste más dinámico
@@ -45,7 +19,6 @@ function startScrolling() {
         }
     }, velocidadScroll);
 }
-
 
 async function readFile(file) {
     return new Promise((resolve, reject) => {
@@ -79,26 +52,52 @@ async function readPDF(file) {
         reader.readAsArrayBuffer(file);
     });
 }
-speedInput.addEventListener("input", () => {
-    document.getElementById("speedDisplay").innerText = speedInput.value;
-});
 
-if ("serviceWorker" in navigator) {
+
+
+document.addEventListener("DOMContentLoaded", () => {
+   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js")
         .then(() => console.log("Service Worker registrado"))
         .catch((error) => console.log("Error al registrar el Service Worker:", error));
 }
+    
+fileInput.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const text = await readFile(file);
+        textContainer.innerText = text;
+    }
+});
 
+startButton.addEventListener("click", () => {
+    if (!scrollInterval) {
+        startScrolling();
+    } else if (isPaused) {
+        isPaused = false;
+    }
+});
 
+pauseButton.addEventListener("click", () => {
+    isPaused = true;
+});
 
-const textoContainer = document.getElementById("textContainer");
+stopButton.addEventListener("click", () => {
+    clearInterval(scrollInterval);
+    scrollInterval = null;
+    textContainer.scrollTop = 0;
+});
+
+speedInput.addEventListener("input", () => {
+    document.getElementById("speedDisplay").innerText = speedInput.value;
+});
+
 
 
 stopButton.addEventListener("click", function() {
     localStorage.removeItem("posicionScroll");
 });
 
-document.addEventListener("DOMContentLoaded", () => {
     cargarArchivoPorDefecto();
 });
 
