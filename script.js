@@ -89,7 +89,7 @@ if ("serviceWorker" in navigator) {
         .catch((error) => console.log("Error al registrar el Service Worker:", error));
 }
 
-const modoOscuroBtn = document.getElementById("modo-oscuro-btn");
+const modoOscuroBtn = document.getElementById("dark-mode");
 
 // Verificar si el usuario ya activó el modo oscuro antes
 if (localStorage.getItem("modoOscuro") === "activado") {
@@ -109,3 +109,76 @@ modoOscuroBtn.addEventListener("click", function() {
         modoOscuroBtn.textContent = "🌙 Modo Oscuro";
     }
 });
+
+
+const textoContainer = document.getElementById("textContainer");
+
+// Función para guardar la posición del scroll
+function guardarPosicionScroll() {
+    localStorage.setItem("posicionScroll", textoContainer.scrollTop);
+}
+
+// Guardar la posición del scroll cada vez que se mueve
+textoContainer.addEventListener("scroll", guardarPosicionScroll);
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const posicionGuardada = localStorage.getItem("posicionScroll");
+
+    if (posicionGuardada) {
+        textoContainer.scrollTop = posicionGuardada;
+    }
+});
+
+
+
+stopButton.addEventListener("click", function() {
+    localStorage.removeItem("posicionScroll");
+});
+
+
+function cargarArchivoPorDefecto() {
+    const defaultFile = "textoWarmup.txt"; // Cambia a "default.pdf" si prefieres un PDF
+
+    fetch(defaultFile)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Error al cargar el archivo por defecto");
+            }
+            return response.blob(); // Convertirlo en un blob
+        })
+        .then(blob => {
+            if (defaultFile.endsWith(".txt")) {
+                // Leer archivo TXT
+                blob.text().then(text => {
+                    textoContainer.textContent = text;
+                });
+            } else if (defaultFile.endsWith(".pdf")) {
+                // Leer archivo PDF con PDF.js
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(blob);
+                reader.onload = function(event) {
+                    const typedarray = new Uint8Array(event.target.result);
+                    pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+                        let textContent = "";
+                        const pages = [];
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            pages.push(pdf.getPage(i).then(page => {
+                                return page.getTextContent().then(text => {
+                                    return text.items.map(s => s.str).join(" ");
+                                });
+                            }));
+                        }
+                        Promise.all(pages).then(textArray => {
+                            textContent = textArray.join("\n\n");
+                            textoContainer.textContent = textContent;
+                        });
+                    });
+                };
+            }
+        })
+        .catch(error => console.error("Error al cargar el archivo por defecto:", error));
+}
+
+// Llamar la función al cargar la página
+window.onload = cargarArchivoPorDefecto;
