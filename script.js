@@ -8,7 +8,31 @@ const textContainer = document.getElementById("textContainer");
 let scrollInterval;
 let isPaused = false;
 
+fileInput.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const text = await readFile(file);
+        textContainer.innerText = text;
+    }
+});
 
+startButton.addEventListener("click", () => {
+    if (!scrollInterval) {
+        startScrolling();
+    } else if (isPaused) {
+        isPaused = false;
+    }
+});
+
+pauseButton.addEventListener("click", () => {
+    isPaused = true;
+});
+
+stopButton.addEventListener("click", () => {
+    clearInterval(scrollInterval);
+    scrollInterval = null;
+    textContainer.scrollTop = 0;
+});
 
 function startScrolling() {
     const ppm = parseInt(speedInput.value) || 200;
@@ -55,7 +79,9 @@ async function readPDF(file) {
         reader.readAsArrayBuffer(file);
     });
 }
-
+speedInput.addEventListener("input", () => {
+    document.getElementById("speedDisplay").innerText = speedInput.value;
+});
 
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js")
@@ -72,62 +98,32 @@ function guardarPosicionScroll() {
     localStorage.setItem("posicionScroll", textoContainer.scrollTop);
 }
 
+// Guardar la posición del scroll cada vez que se mueve
+textoContainer.addEventListener("scroll", guardarPosicionScroll);
 
-document.addEventListener("DOMContentLoaded", () => {
+
+document.addEventListener("DOMContentLoaded", function () {
     const posicionGuardada = localStorage.getItem("posicionScroll");
 
     if (posicionGuardada) {
         textoContainer.scrollTop = posicionGuardada;
     }
-	
-	cargarArchivoPorDefecto();
-	
-	fileInput.addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        const text = await readFile(file);
-        textContainer.innerText = text;
-    }
 });
 
-
-startButton.addEventListener("click", () => {
-    if (!scrollInterval) {
-        startScrolling();
-    } else if (isPaused) {
-        isPaused = false;
-    }
-});
-
-pauseButton.addEventListener("click", () => {
-    isPaused = true;
-});
-
-stopButton.addEventListener("click", () => {
-    clearInterval(scrollInterval);
-    scrollInterval = null;
-    textContainer.scrollTop = 0;
-});
-
-speedInput.addEventListener("input", () => {
-    document.getElementById("speedDisplay").innerText = speedInput.value;
-});
-
-// Guardar la posición del scroll cada vez que se mueve
-textoContainer.addEventListener("scroll", guardarPosicionScroll);
 
 
 stopButton.addEventListener("click", function() {
     localStorage.removeItem("posicionScroll");
 });
 
-	
+document.addEventListener("DOMContentLoaded", () => {
+    cargarArchivoPorDefecto();
 });
 
 function cargarArchivoPorDefecto() {
     const defaultFile = "textoWarmup.txt"; // Cambia a "default.pdf" si prefieres un PDF
-    const fileUrl = window.location.origin + "/lector-texto-pwa/" + defaultFile;
-
+    const fileUrl = window.location.origin + "/lector-texto-pwa/" +defaultFile;
+    console.log(fileUrl);
     fetch(fileUrl)
         .then(response => {
             if (!response.ok) {
@@ -138,7 +134,7 @@ function cargarArchivoPorDefecto() {
         .then(blob => {
             if (defaultFile.endsWith(".txt")) {
                 blob.text().then(text => {
-                    document.getElementById("textContainer").textContent = text;
+                    document.getElementById("texto-container").textContent = text;
                 });
             } else if (defaultFile.endsWith(".pdf")) {
                 leerPDF(blob);
@@ -166,7 +162,7 @@ function leerPDF(blob) {
 
             Promise.all(pages).then(textArray => {
                 textContent = textArray.join("\n\n");
-                document.getElementById("textContainer").textContent = textContent;
+                document.getElementById("texto-container").textContent = textContent;
             });
         });
     };
