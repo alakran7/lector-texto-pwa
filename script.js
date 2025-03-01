@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function cargarArchivoPorDefecto() {
-    const defaultFile = "default.txt"; // Cambia a "default.pdf" si prefieres un PDF
+    const defaultFile = "textoWarmup.txt"; // Cambia a "default.pdf" si prefieres un PDF
     const fileUrl = window.location.origin + "/" + defaultFile;
 
     fetch(fileUrl)
