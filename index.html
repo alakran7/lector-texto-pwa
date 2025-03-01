@@ -27,20 +27,6 @@
 			border: 1px solid #ccc; /* Opcional, solo para visualizar 
 		}
 		
-		#formattedTextContainer {
-		    width: 80%; height: 300px; overflow-y: scroll; 
-            margin: 20px auto; border: 1px solid #ccc; padding: 10px;
-			height: 100vh; /* Ocupa toda la altura de la pantalla */
-			overflow-y: auto; /* Permite el scroll */
-			overflow: auto;
-			padding: 20px;
-			box-sizing: border-box;
-			background: #f9f9f9; /* Color de fondo suave */
-			border: 1px solid #ccc; /* Opcional, solo para visualizar 
-		}
-		
-		console.log("Altura del contenedor:", textContainer.clientHeight);
-console.log("Altura total del contenido:", textContainer.scrollHeight);
     </style>
 	
 	<!-- Manifest para la PWA -->
@@ -63,14 +49,8 @@ console.log("Altura total del contenido:", textContainer.scrollHeight);
     <button id="startButton">Iniciar</button>
     <button id="pauseButton">Pausar</button>
     <button id="stopButton">Detener</button>
-    
-	<div>
-    <button id="tab1">Texto Completo</button>
-    <button id="tab2">Texto en Líneas de 3 Palabras</button>
-	</div>
 
 <div id="textContainer"></div>
-<div id="formattedTextContainer" style="display: none;"></div>
 
 </body>
 </html>
