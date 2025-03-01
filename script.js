@@ -91,7 +91,8 @@ function cargarArchivoPorDefecto() {
         .then(blob => {
             if (defaultFile.endsWith(".txt")) {
                 blob.text().then(text => {
-                    document.getElementById("textContainer").textContent = formatTextToThreeWordsPerLine(text);
+					textContainer.innerHTML =formatTextToThreeWordsPerLine(text);
+//                    document.getElementById("textContainer").textContent = formatTextToThreeWordsPerLine(text);
                 });
             } else if (defaultFile.endsWith(".pdf")) {
                 leerPDF(blob);
