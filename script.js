@@ -55,9 +55,7 @@ async function readPDF(file) {
         reader.readAsArrayBuffer(file);
     });
 }
-speedInput.addEventListener("input", () => {
-    document.getElementById("speedDisplay").innerText = speedInput.value;
-});
+
 
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js")
@@ -118,6 +116,9 @@ stopButton.addEventListener("click", () => {
     textContainer.scrollTop = 0;
 });
 
+speedInput.addEventListener("input", () => {
+    document.getElementById("speedDisplay").innerText = speedInput.value;
+});
 	
 });
 
