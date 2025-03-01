@@ -55,8 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
 function formatTextToThreeWordsPerLine(text) {
     const words = text.split(/\s+/);
     let formattedText = "";
-    for (let i = 0; i < words.length; i += 3) {
-        formattedText += words.slice(i, i + 3).join(" ") + "<br>";
+    for (let i = 0; i < words.length; i += 7) {
+        formattedText += words.slice(i, i + 7).join(" ") + "<br>";
     }
     return formattedText;
 }
