@@ -2,7 +2,7 @@ let scrollInterval;
 let isPaused = false;
 document.addEventListener("DOMContentLoaded", () => {
     if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/sw.js")
+        navigator.serviceWorker.register("/lector-texto-pwa/sw.js")
             .then(() => console.log("Service Worker registrado"))
             .catch((error) => console.log("Error al registrar el Service Worker:", error));
     }
@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     startButton.addEventListener("click", () => {
-		 console.log("Botón Iniciar clickeado"); 
         if (!scrollInterval) {
             startScrolling();
         } else if (isPaused) {
@@ -63,7 +62,6 @@ function formatTextToThreeWordsPerLine(text) {
 }
 
 function startScrolling() {
-    console.log("startScrolling ejecutándose");
 	const ppm = parseInt(speedInput.value) || 200;
     const velocidadScroll = (textContainer.scrollHeight / ppm) * 10; // Ajuste dinámico
 
@@ -71,7 +69,6 @@ function startScrolling() {
     scrollInterval = setInterval(() => {
         if (!isPaused) {
             textContainer.scrollTop += 2; // Incremento más visible
-			console.log("Scrolling... posición:", textContainer.scrollTop);
         }
     }, velocidadScroll);
 }
