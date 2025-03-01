@@ -78,7 +78,7 @@ async function readFile(file) {
 }
 
 function cargarArchivoPorDefecto() {
-    const defaultFile = "textoWarmup.txt"; // Cambia a "default.pdf" si prefieres un PDF
+    const defaultFile = "Cap13-16 libro.txt"; // Cambia a "default.pdf" si prefieres un PDF
     const fileUrl = window.location.origin + "/lector-texto-pwa/" + defaultFile;
 
     fetch(fileUrl)
