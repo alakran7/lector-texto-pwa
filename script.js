@@ -1,6 +1,5 @@
 let scrollInterval;
 let isPaused = false;
-
 document.addEventListener("DOMContentLoaded", () => {
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js")
@@ -13,34 +12,54 @@ document.addEventListener("DOMContentLoaded", () => {
         if (file) {
             const text = await readFile(file);
             textContainer.innerText = text;
+            formattedTextContainer.innerHTML = formatTextToThreeWordsPerLine(text);
         }
     });
 
     startButton.addEventListener("click", () => {
         if (!scrollInterval) {
-            startScrolling();  // Inicia el scroll si no ha sido iniciado aún
+            startScrolling();
         } else if (isPaused) {
-            isPaused = false;  // Reanuda si estaba pausado
+            isPaused = false;
         }
     });
 
     pauseButton.addEventListener("click", () => {
-        isPaused = true;  // Pausa el scroll
+        isPaused = true;
     });
 
     stopButton.addEventListener("click", () => {
         clearInterval(scrollInterval);
-        scrollInterval = null;  // Restablece el intervalo al detener el scroll
-        textContainer.scrollTop = 0;  // Vuelve al inicio
-        localStorage.removeItem("posicionScroll");  // Limpia la posición del scroll en localStorage
+        scrollInterval = null;
+        textContainer.scrollTop = 0;
+        localStorage.removeItem("posicionScroll");
     });
 
     speedInput.addEventListener("input", () => {
         document.getElementById("speedDisplay").innerText = speedInput.value;
     });
 
+    document.getElementById("tab1").addEventListener("click", () => {
+        document.getElementById("textContainer").style.display = "block";
+        document.getElementById("formattedTextContainer").style.display = "none";
+    });
+
+    document.getElementById("tab2").addEventListener("click", () => {
+        document.getElementById("textContainer").style.display = "none";
+        document.getElementById("formattedTextContainer").style.display = "block";
+    });
+
     cargarArchivoPorDefecto();
 });
+
+function formatTextToThreeWordsPerLine(text) {
+    const words = text.split(/\s+/);
+    let formattedText = "";
+    for (let i = 0; i < words.length; i += 3) {
+        formattedText += words.slice(i, i + 3).join(" ") + "<br>";
+    }
+    return formattedText;
+}
 
 function startScrolling() {
     const ppm = parseInt(speedInput.value) || 200;
