@@ -72,13 +72,6 @@ function guardarPosicionScroll() {
     localStorage.setItem("posicionScroll", textoContainer.scrollTop);
 }
 
-// Guardar la posición del scroll cada vez que se mueve
-textoContainer.addEventListener("scroll", guardarPosicionScroll);
-
-
-stopButton.addEventListener("click", function() {
-    localStorage.removeItem("posicionScroll");
-});
 
 document.addEventListener("DOMContentLoaded", () => {
     const posicionGuardada = localStorage.getItem("posicionScroll");
@@ -119,6 +112,15 @@ stopButton.addEventListener("click", () => {
 speedInput.addEventListener("input", () => {
     document.getElementById("speedDisplay").innerText = speedInput.value;
 });
+
+// Guardar la posición del scroll cada vez que se mueve
+textoContainer.addEventListener("scroll", guardarPosicionScroll);
+
+
+stopButton.addEventListener("click", function() {
+    localStorage.removeItem("posicionScroll");
+});
+
 	
 });
 
