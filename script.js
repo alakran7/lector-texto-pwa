@@ -136,49 +136,54 @@ stopButton.addEventListener("click", function() {
     localStorage.removeItem("posicionScroll");
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+    cargarArchivoPorDefecto();
+});
 
 function cargarArchivoPorDefecto() {
-    const defaultFile = "textoWarmup.txt"; // Cambia a "default.pdf" si prefieres un PDF
+    const defaultFile = "default.txt"; // Cambia a "default.pdf" si prefieres un PDF
+    const fileUrl = window.location.origin + "/" + defaultFile;
 
-    fetch(defaultFile)
+    fetch(fileUrl)
         .then(response => {
             if (!response.ok) {
                 throw new Error("Error al cargar el archivo por defecto");
             }
-            return response.blob(); // Convertirlo en un blob
+            return response.blob();
         })
         .then(blob => {
             if (defaultFile.endsWith(".txt")) {
-                // Leer archivo TXT
                 blob.text().then(text => {
-                    textoContainer.textContent = text;
+                    document.getElementById("texto-container").textContent = text;
                 });
             } else if (defaultFile.endsWith(".pdf")) {
-                // Leer archivo PDF con PDF.js
-                const reader = new FileReader();
-                reader.readAsArrayBuffer(blob);
-                reader.onload = function(event) {
-                    const typedarray = new Uint8Array(event.target.result);
-                    pdfjsLib.getDocument(typedarray).promise.then(pdf => {
-                        let textContent = "";
-                        const pages = [];
-                        for (let i = 1; i <= pdf.numPages; i++) {
-                            pages.push(pdf.getPage(i).then(page => {
-                                return page.getTextContent().then(text => {
-                                    return text.items.map(s => s.str).join(" ");
-                                });
-                            }));
-                        }
-                        Promise.all(pages).then(textArray => {
-                            textContent = textArray.join("\n\n");
-                            textoContainer.textContent = textContent;
-                        });
-                    });
-                };
+                leerPDF(blob);
             }
         })
         .catch(error => console.error("Error al cargar el archivo por defecto:", error));
 }
 
-// Llamar la función al cargar la página
-window.onload = cargarArchivoPorDefecto;
+function leerPDF(blob) {
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(blob);
+    reader.onload = function(event) {
+        const typedarray = new Uint8Array(event.target.result);
+        pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+            let textContent = "";
+            const pages = [];
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                pages.push(pdf.getPage(i).then(page => {
+                    return page.getTextContent().then(text => {
+                        return text.items.map(s => s.str).join(" ");
+                    });
+                }));
+            }
+
+            Promise.all(pages).then(textArray => {
+                textContent = textArray.join("\n\n");
+                document.getElementById("texto-container").textContent = textContent;
+            });
+        });
+    };
+}
