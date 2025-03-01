@@ -8,13 +8,7 @@ const textContainer = document.getElementById("textContainer");
 let scrollInterval;
 let isPaused = false;
 
-fileInput.addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        const text = await readFile(file);
-        textContainer.innerText = text;
-    }
-});
+
 
 startButton.addEventListener("click", () => {
     if (!scrollInterval) {
@@ -102,22 +96,27 @@ function guardarPosicionScroll() {
 textoContainer.addEventListener("scroll", guardarPosicionScroll);
 
 
-document.addEventListener("DOMContentLoaded", function () {
-    const posicionGuardada = localStorage.getItem("posicionScroll");
-
-    if (posicionGuardada) {
-        textoContainer.scrollTop = posicionGuardada;
-    }
-});
-
-
-
 stopButton.addEventListener("click", function() {
     localStorage.removeItem("posicionScroll");
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    cargarArchivoPorDefecto();
+    const posicionGuardada = localStorage.getItem("posicionScroll");
+
+    if (posicionGuardada) {
+        textoContainer.scrollTop = posicionGuardada;
+    }
+	
+	cargarArchivoPorDefecto();
+	
+	fileInput.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const text = await readFile(file);
+        textContainer.innerText = text;
+    }
+});
+	
 });
 
 function cargarArchivoPorDefecto() {
