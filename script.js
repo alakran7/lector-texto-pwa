@@ -11,8 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const file = event.target.files[0];
         if (file) {
             const text = await readFile(file);
-            textContainer.innerText = text;
-            formattedTextContainer.innerHTML = formatTextToThreeWordsPerLine(text);
+            //textContainer.innerText = text;
+            textContainer.innerHTML = formatTextToThreeWordsPerLine(text);
         }
     });
 
