@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fileInput.addEventListener("change", async (event) => {
         const file = event.target.files[0];
         if (file) {
-            const text = await readFile(file);
+            const text = await readFile(file);  // Asegúrate de que readFile esté definida antes de esta línea
             textContainer.innerText = text;
         }
     });
@@ -38,6 +38,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     cargarArchivoPorDefecto();
 });
+
+async function readFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        if (file.type === "text/plain") {
+            reader.readAsText(file);
+        } else if (file.type === "application/pdf") {
+            readPDF(file).then(resolve).catch(reject);
+        } else {
+            reject("Unsupported file format");
+        }
+    });
+}
 
 function cargarArchivoPorDefecto() {
     const defaultFile = "textoWarmup.txt"; // Cambia a "default.pdf" si prefieres un PDF
