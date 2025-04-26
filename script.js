@@ -5,6 +5,9 @@ let currentLineIndex = 0;
 let lines = [];
 
 document.addEventListener("DOMContentLoaded", () => {
+	// Aseguramos que solo textContainer esté visible inicialmente
+    document.getElementById("textContainer").style.display = "block";
+    document.getElementById("lineContainer").style.display = "none";
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/lector-texto-pwa/sw.js")
             .then(() => console.log("Service Worker registrado"))
