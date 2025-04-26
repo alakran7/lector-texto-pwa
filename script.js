@@ -3,6 +3,8 @@ let lineInterval;
 let isPaused = false;
 let currentLineIndex = 0;
 let lines = [];
+let cronometroInterval;
+let tiempoTranscurrido = 0; // en segundos
 
 document.addEventListener("DOMContentLoaded", () => {
 	// Aseguramos que solo textContainer esté visible inicialmente
@@ -54,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     startButton.addEventListener("click", () => {
         const isLineMode = document.getElementById("lineContainer").style.display === "block";
-
+		iniciarCronometro();
         if (isLineMode) {
             startLineByLineReading();
         } else {
@@ -71,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     stopButton.addEventListener("click", () => {
+		detenerCronometro();
         clearInterval(scrollInterval);
         clearInterval(lineInterval);
         scrollInterval = null;
@@ -123,14 +126,16 @@ function startLineByLineReading() {
     const display = document.getElementById("lineContainer");
     display.innerHTML = ""; // Asegúrate de que esté vacío al inicio
 
-    lineInterval = setInterval(() => {
+	lineInterval = setInterval(() => {
+    if (!isPaused) {  // <-- agregar esta condición
         if (currentLineIndex < lines.length) {
             display.innerHTML = `<p>${lines[currentLineIndex]}</p>`;
             currentLineIndex++;
         } else {
             clearInterval(lineInterval); // Detenemos el intervalo cuando se acaben las líneas
         }
-    }, interval);
+    }
+}, interval);
 }
 
 async function readFile(file) {
@@ -240,3 +245,52 @@ function formatTextToLinesByWords(text, wordsPerLine = 7) {
 
     return formattedText;
 }
+
+function iniciarCronometro() {
+    clearInterval(cronometroInterval);
+    cronometroInterval = setInterval(() => {
+        if (!isPaused) {
+            tiempoTranscurrido++;
+            actualizarCronometro();
+        }
+    }, 1000);
+}
+
+function pausarCronometro() {
+    // El cronómetro se pausa automáticamente porque revisamos isPaused dentro del intervalo
+}
+
+function detenerCronometro() {
+    clearInterval(cronometroInterval);
+    tiempoTranscurrido = 0;
+    actualizarCronometro();
+}
+
+function actualizarCronometro() {
+    const minutos = Math.floor(tiempoTranscurrido / 60).toString().padStart(2, "0");
+    const segundos = (tiempoTranscurrido % 60).toString().padStart(2, "0");
+    const cronometro = document.getElementById("cronometro");
+    cronometro.textContent = `${minutos}:${segundos}`;
+
+    // Cambio de color después de 5 minutos
+    if (tiempoTranscurrido >= 180) {
+        cronometro.style.color = "red";
+        mostrarMensajeFlotante("¡Has alcanzado 3 minutos de lectura! 🎯");
+    } else {
+        cronometro.style.color = "green";
+    }
+}
+
+function mostrarMensajeFlotante(mensaje) {
+    const mensajeDiv = document.getElementById("mensajeFlotante");
+    if (mensajeDiv.style.display === "none") {
+        mensajeDiv.textContent = mensaje;
+        mensajeDiv.style.display = "block";
+        
+        setTimeout(() => {
+            mensajeDiv.style.display = "none";
+        }, 5000); // 5 segundos visible
+    }
+}
+
+
