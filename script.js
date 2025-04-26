@@ -1,5 +1,9 @@
 let scrollInterval;
+let lineInterval;
 let isPaused = false;
+let currentLineIndex = 0;
+let lines = [];
+
 document.addEventListener("DOMContentLoaded", () => {
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/lector-texto-pwa/sw.js")
@@ -7,19 +11,55 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch((error) => console.log("Error al registrar el Service Worker:", error));
     }
 
-    fileInput.addEventListener("change", async (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const text = await readFile(file);
-            textContainer.innerHTML = formatTextToThreeWordsPerLine(text);
-        }
+    // Botones de tabs
+    document.getElementById("tabScroll").addEventListener("click", () => {
+        document.getElementById("textContainer").style.display = "block";
+        document.getElementById("lineContainer").style.display = "none";
+        document.getElementById("tabScroll").classList.add("active");
+        document.getElementById("tabLine").classList.remove("active");
     });
 
+    document.getElementById("tabLine").addEventListener("click", () => {
+        document.getElementById("textContainer").style.display = "none";
+        document.getElementById("lineContainer").style.display = "block";
+        document.getElementById("tabLine").classList.add("active");
+        document.getElementById("tabScroll").classList.remove("active");
+    });
+
+
+	
+	
+	fileInput.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const text = await readFile(file);
+
+        // Usamos la nueva función para formatear el texto por palabras
+        const formattedText = formatTextToLinesByWords(text);
+        textContainer.innerHTML = formattedText;
+
+        // Dividimos el texto en líneas para la lectura línea por línea
+        lines = text.split(/\s+/).reduce((acc, word, index) => {
+			const i = Math.floor(index / 7);
+			acc[i] = acc[i] ? acc[i] + ' ' + word : word;
+			return acc;
+		}, []);
+        lineContainer.textContent = lines[0] || "";
+        currentLineIndex = 0;
+    }
+});
+
     startButton.addEventListener("click", () => {
-        if (!scrollInterval) {
-            startScrolling();
-        } else if (isPaused) {
-            isPaused = false;
+        const isLineMode = document.getElementById("lineContainer").style.display === "block";
+
+        if (isLineMode) {
+            startLineByLineReading();
+        } else {
+            if (!scrollInterval) {
+                startScrolling();
+            } else if (isPaused) {
+                isPaused = false;
+            }
         }
     });
 
@@ -29,8 +69,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     stopButton.addEventListener("click", () => {
         clearInterval(scrollInterval);
+        clearInterval(lineInterval);
         scrollInterval = null;
+        lineInterval = null;
+        isPaused = false;
         textContainer.scrollTop = 0;
+        currentLineIndex = 0;
+        lineContainer.textContent = lines[0] || "";
         localStorage.removeItem("posicionScroll");
     });
 
@@ -51,15 +96,38 @@ function formatTextToThreeWordsPerLine(text) {
 }
 
 function startScrolling() {
-	const ppm = parseInt(speedInput.value) || 200;
-    const velocidadScroll = (textContainer.scrollHeight / ppm) * 10; // Ajuste dinámico
+    const ppm = parseInt(speedInput.value) || 200;
+    const velocidadScroll = (textContainer.scrollHeight / ppm) * 10;
 
-    clearInterval(scrollInterval);  // Limpia cualquier intervalo anterior
+    clearInterval(scrollInterval);
     scrollInterval = setInterval(() => {
         if (!isPaused) {
-            textContainer.scrollTop += 2; // Incremento más visible
+            textContainer.scrollTop += 2;
         }
     }, velocidadScroll);
+}
+
+function startLineByLineReading() {
+    const ppm = parseInt(speedInput.value) || 200;
+    const interval = Math.floor(60000 / ppm * 7); // Aproximadamente 7 palabras por línea
+
+    if (lines.length === 0) {
+        return; // Si no hay líneas cargadas, no hacemos nada
+    }
+
+    clearInterval(lineInterval);
+    currentLineIndex = 0; // Reiniciamos el índice de la línea
+    const display = document.getElementById("lineContainer");
+    display.innerHTML = ""; // Asegúrate de que esté vacío al inicio
+
+    lineInterval = setInterval(() => {
+        if (currentLineIndex < lines.length) {
+            display.innerHTML = `<p>${lines[currentLineIndex]}</p>`;
+            currentLineIndex++;
+        } else {
+            clearInterval(lineInterval); // Detenemos el intervalo cuando se acaben las líneas
+        }
+    }, interval);
 }
 
 async function readFile(file) {
@@ -77,29 +145,42 @@ async function readFile(file) {
     });
 }
 
+
+
 function cargarArchivoPorDefecto() {
-    const defaultFile = "Cap13-16 libro.txt"; // Cambia a "default.pdf" si prefieres un PDF
+    const defaultFile = "Cap13-16 libro.txt";
     const fileUrl = window.location.origin + "/lector-texto-pwa/" + defaultFile;
 
     fetch(fileUrl)
         .then(response => {
-            if (!response.ok) {
-                throw new Error("Error al cargar el archivo por defecto");
-            }
+            if (!response.ok) throw new Error("Error al cargar archivo por defecto");
             return response.blob();
         })
         .then(blob => {
             if (defaultFile.endsWith(".txt")) {
                 blob.text().then(text => {
-					textContainer.innerHTML =formatTextToThreeWordsPerLine(text);
-//                    document.getElementById("textContainer").textContent = formatTextToThreeWordsPerLine(text);
-                });
+					const formatted = formatTextToLinesByWords(text);
+					textContainer.innerHTML = formatted;
+
+					lines = text.split(/\s+/).reduce((acc, word, index) => {
+						const i = Math.floor(index / 7);
+						acc[i] = acc[i] ? acc[i] + ' ' + word : word;
+						return acc;
+					}, []);
+
+					lineContainer.textContent = lines[0] || "";
+					currentLineIndex = 0;
+				});
             } else if (defaultFile.endsWith(".pdf")) {
                 leerPDF(blob);
             }
         })
-        .catch(error => console.error("Error al cargar el archivo por defecto:", error));
+        .catch(console.error);
 }
+
+
+
+
 
 function leerPDF(blob) {
     const reader = new FileReader();
@@ -120,8 +201,39 @@ function leerPDF(blob) {
 
             Promise.all(pages).then(textArray => {
                 textContent = textArray.join("\n\n");
-                document.getElementById("textContainer").textContent = textContent;
+                textContainer.innerHTML = formatTextToLinesByWords(textContent);
+
+				lines = textContent.split(/\s+/).reduce((acc, word, index) => {
+					const i = Math.floor(index / 7);
+					acc[i] = acc[i] ? acc[i] + ' ' + word : word;
+					return acc;
+				}, []);
+
+				lineContainer.textContent = lines[0] || "";
+				currentLineIndex = 0;
             });
         });
     };
+}
+
+function formatTextToLinesByWords(text, wordsPerLine = 7) {
+    const words = text.split(/\s+/);  // Dividimos el texto en palabras
+    let formattedText = "";
+    let currentLine = [];
+    
+    words.forEach(word => {
+        currentLine.push(word);
+        
+        if (currentLine.length === wordsPerLine) {
+            formattedText += currentLine.join(" ") + "<br>";  // Unimos las palabras y las agregamos como una línea
+            currentLine = [];  // Reiniciamos la línea
+        }
+    });
+    
+    // Si quedan palabras en la última línea
+    if (currentLine.length > 0) {
+        formattedText += currentLine.join(" ");
+    }
+
+    return formattedText;
 }

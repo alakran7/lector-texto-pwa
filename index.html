@@ -1,59 +1,157 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lector de Texto con Scroll Automático</title>
-    <script src="pdf.js"></script> <!-- Biblioteca PDF.js -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="script.js" defer></script> <!-- Tu código JS --> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lector de Texto con Scroll Automático</title>
 
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        #textContainer { 
-            width: 80%; height: 300px; overflow-y: scroll; 
-            margin: 20px auto; border: 1px solid #ccc; padding: 10px; 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <script src="script.js" defer></script>
+
+ <style>
+    :root {
+        --background-light: #f9f9f9;
+        --text-light: #333;
+        --background-dark: #121212;
+        --text-dark: #f1f1f1;
+        --accent: #007bff;
+        --border: #ccc;
+        --transition-speed: 0.3s;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        background-color: var(--background-light);
+        color: var(--text-light);
+        transition: background-color var(--transition-speed), color var(--transition-speed);
+    }
+
+    body.dark-mode {
+        background-color: var(--background-dark);
+        color: var(--text-dark);
+    }
+
+    h2 {
+        margin: 20px 0;
+        font-size: 1.8rem;
+    }
+
+    input[type="file"],
+    input[type="number"],
+    button {
+        margin: 10px;
+        padding: 10px 15px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        outline: none;
+        transition: background-color var(--transition-speed);
+    }
+
+    button {
+        background-color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: var(--accent);
+        color: white;
+    }
+
+    button.active {
+        background-color: var(--accent);
+        color: white;
+    }
+
+    #textContainer,
+    #lineContainer {
+        width: 90%;
+        max-width: 800px;
+        height: 70vh;
+        overflow-y: auto;
+        padding: 20px;
+        box-sizing: border-box;
+        background: var(--background-light);
+        border: 1px solid var(--border);
+        margin: 20px auto;
+        font-size: 1.4rem;
+        line-height: 1.6;
+        border-radius: 10px;
+        transition: background-color var(--transition-speed), color var(--transition-speed);
+    }
+
+    body.dark-mode #textContainer,
+    body.dark-mode #lineContainer {
+        background-color: #1e1e1e;
+        color: var(--text-dark);
+        border-color: #444;
+    }
+
+    @media (max-width: 600px) {
+        input, button {
+            width: 90%;
+            margin: 8px auto;
         }
-        button, input { margin: 5px; padding: 10px; }
-		
-		#textContainer {
-			width: 100%;
-			height: 100vh; /* Ocupa toda la altura de la pantalla */
-			overflow-y: auto; /* Permite el scroll */
-			overflow: auto;
-			padding: 20px;
-			box-sizing: border-box;
-			background: #f9f9f9; /* Color de fondo suave */
-			border: 1px solid #ccc; /* Opcional, solo para visualizar 
-		}
-		
-		
-		
-    </style>
+
+        #textContainer, #lineContainer {
+            height: 60vh;
+            font-size: 1.2rem;
+        }
+    }
 	
-	<!-- Manifest para la PWA -->
-<link rel="manifest" href="manifest.json">
+	#tabs {
+    margin-top: 10px;
+}
 
-<!-- Configuración para iPhone -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Lector de Texto">
+#tabs button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    border-radius: 8px;
+    background-color: #eee;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
 
-<!-- Ícono para iPhone -->
-<link rel="apple-touch-icon" href="icon.png">
+#tabs button.active {
+    background-color: var(--accent);
+    color: white;
+}
+</style>
 
+
+  <!-- Manifest para la PWA -->
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+  <meta name="apple-mobile-web-app-title" content="Lector de Texto"/>
+  <link rel="apple-touch-icon" href="icon.png"/>
 </head>
 <body>
-    <h2>Lector de Texto con Scroll Automático</h2>
-    <input type="file" id="fileInput" accept=".txt, .pdf">
-    <input type="number" id="speedInput" placeholder="Palabras por minuto" value="200">
-	<p>Velocidad actual: <span id="speedDisplay">200</span> PPM</p>
-    <button id="startButton">Iniciar</button>
-    <button id="pauseButton">Pausar</button>
-    <button id="stopButton">Detener</button>
 
-<div id="textContainer"></div>
 
+  <h2>Lector de Texto</h2>
+
+  <div class="tab-buttons">
+    <button id="tabScroll" class="active">Scroll completo</button>
+    <button id="tabLine">Lectura por línea</button>
+  </div>
+
+  <input type="file" id="fileInput" accept=".txt, .pdf" />
+  <input type="number" id="speedInput" placeholder="Palabras por minuto" value="200"/>
+  <p>Velocidad actual: <span id="speedDisplay">200</span> PPM</p>
+  <button id="startButton">Iniciar</button>
+  <button id="pauseButton">Pausar</button>
+  <button id="stopButton">Detener</button>
+
+  <!-- Contenedor para scroll automático -->
+  <div id="textContainer" class="tab-content active"></div>
+
+  <!-- Contenedor para lectura línea por línea -->
+  <div id="lineContainer" class="tab-content"></div>
 </body>
 </html>
-
